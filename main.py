@@ -17,6 +17,9 @@ moving_left = False
 player_location = [50,50]
 player_y_momentum = 0
 
+player_rect = pygame.Rect(player_location[0],player_location[1],circleee.get_width(),circleee.get_height())
+test_rect = pygame.Rect(100,100,100,50)
+
 running = True
 while running:
     if player_location[1] > window_size[1]-circleee.get_height():
@@ -29,7 +32,15 @@ while running:
         player_location[0]+=4
     if moving_left:
         player_location[0]-=4
-    screen.blit(circleee,player_location)
+
+    player_rect.x = player_location[0]
+    player_rect.y = player_location[1]
+
+    if player_rect.colliderect(test_rect):
+        pygame.draw.rect(screen,(255,0,0),test_rect)
+    else:
+        pygame.draw.rect(screen,(0,0,0),test_rect)
+    screen.blit(circleee,player_location)     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
