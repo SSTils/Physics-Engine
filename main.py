@@ -36,6 +36,8 @@ while running:
     player_rect.x = player_location[0]
     player_rect.y = player_location[1]
 
+    point_circle = pygame.draw.circle(screen,(180,125,0),(400,600),100.0)
+
     if player_rect.colliderect(test_rect):
         pygame.draw.rect(screen,(255,0,0),test_rect)
     else:
