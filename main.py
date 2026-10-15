@@ -20,6 +20,8 @@ player_y_momentum = 0
 player_rect = pygame.Rect(player_location[0],player_location[1],circleee.get_width(),circleee.get_height())
 test_rect = pygame.Rect(100,100,100,50)
 
+circle = (500,800)
+
 running = True
 while running:
     if player_location[1] > window_size[1]-circleee.get_height():
@@ -36,7 +38,7 @@ while running:
     player_rect.x = player_location[0]
     player_rect.y = player_location[1]
 
-    point_circle = pygame.draw.circle(screen,(180,125,0),(400,600),100.0)
+    point_circle = pygame.draw.circle(screen,(180,125,0),(circle[0],circle[1]),100.0)
 
     if player_rect.colliderect(test_rect):
         pygame.draw.rect(screen,(255,0,0),test_rect)
