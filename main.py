@@ -62,7 +62,7 @@ class particle:
             self.x_velocity = (-self.x_velocity)
             self.x_velocity = kb*self.x_velocity
             if (abs(self.x_velocity) <= (0.37)) and ((self.x_location + self.radius == width) or self.x_location - self.radius == 0):
-                self.x_location = 0
+                self.x_velocity = 0
         
 
     def draw(self, surface ):
