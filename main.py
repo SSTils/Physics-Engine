@@ -22,9 +22,52 @@ player_y_momentum = 0
 circle_xlocation = (900)
 circle_ylocation = (440)
 circle_y_velocity = 0
-circle_x_velocity = 0
+circle_x_velocity = 10
 circle_radius = 70.0
-gravity = g = 0.1635
+gravity = g = 0.17
+heightt = screen.get_height()
+bouncing_coefficent = kb = 0.7
+wid = screen.get_width()
+class particle:
+    def __init__(self, x_location,y_location,x_velocity,y_velocity,mass,radius,color):
+        self.x_location = x_location
+        self.y_location = y_location
+        self.mass = mass
+        self.radius = radius
+        self.color = color
+
+        self.x_velocity = x_velocity
+        self.y_velocity = y_velocity
+    def update(self,height, width, gravity):
+        if self.y_location + self.radius < height:
+            self.y_velocity += gravity
+        self.y_location += self.y_velocity
+        if self.y_location + self.radius >= height:
+            self.y_location = height -self.radius
+            self.y_velocity = (-self.y_velocity)
+            self.y_velocity = kb*self.y_velocity
+            if (abs(self.y_velocity) <= (gravity+0.2)) and (self.y_location + self.radius == height):
+                self.y_velocity = 0
+                gravity = 0
+        gravity = g
+        self.x_location += self.x_velocity
+        if (self.x_location +self.radius >= width):
+            self.x_location = width - self.radius
+            self.x_velocity = (-self.x_velocity)
+            self.x_velocity = kb*self.x_velocity
+            if (abs(self.x_velocity) <= (0.37)) and ((self.x_location + self.radius == width) or self.x_location - self.radius == 0):
+                self.x_location = 0
+        if (self.x_location - self.radius <= 0):
+            self.x_location = self.radius
+            self.x_velocity = (-self.x_velocity)
+            self.x_velocity = kb*self.x_velocity
+            if (abs(self.x_velocity) <= (0.37)) and ((self.x_location + self.radius == width) or self.x_location - self.radius == 0):
+                self.x_location = 0
+        
+
+    def draw(self, surface ):
+        pygame.draw.circle(surface, self.color, (int(self.x_location),int(self.y_location)), float(self.radius))
+par1 = particle(circle_xlocation, circle_ylocation,circle_x_velocity,circle_y_velocity, 10, circle_radius,(75, 145, 145))
 
 running = True
 while running:
@@ -41,16 +84,23 @@ while running:
 
     # player_rect.x = player_location[0]
     # player_rect.y = player_location[1]
+    par1.update(heightt,wid,g)
+    par1.draw(screen)
 
-    point_circle = pygame.draw.circle(screen,(75, 145, 145),(circle_xlocation,circle_ylocation),circle_radius)
-    if circle_ylocation + circle_radius < screen.get_height():
-        circle_y_velocity += g
-    if circle_ylocation + circle_radius >= screen.get_height():
-        circle_y_velocity = (-circle_y_velocity)
-    if circle_y_velocity > 0:
-        circle_ylocation += circle_y_velocity
-    if circle_y_velocity < 0:
-        circle_ylocation += circle_y_velocity
+    # *********************************************FIRST VERSION********************************************************
+
+    # point_circle = pygame.draw.circle(screen,(75, 145, 145),(circle_xlocation,circle_ylocation),circle_radius)
+    # if circle_ylocation + circle_radius < screen.get_height():
+    #     circle_y_velocity += g
+    # if circle_ylocation + circle_radius >= screen.get_height():
+    #     circle_y_velocity = (-circle_y_velocity)
+    # if circle_y_velocity > 0:
+    #     circle_ylocation += circle_y_velocity
+    # if circle_y_velocity < 0:
+    #     circle_ylocation += circle_y_velocity
+
+    # *********************************************FIRST VERSION********************************************************
+
     # if player_rect.colliderect(test_rect):
     #     pygame.draw.rect(screen,(255,0,0),test_rect)
     # else:
