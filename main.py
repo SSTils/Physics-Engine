@@ -28,7 +28,25 @@ gravity = g = 0.17
 heightt = screen.get_height()
 bouncing_coefficent = kb = 0.7
 wid = screen.get_width()
-class particle:
+friction_coefficient_ = mu = 0.7
+
+
+class entity:
+    def __init__(self,mass,x_velocity,y_velocity,x_location,y_location):
+        self.mass = mass
+        self.x_velocity = x_velocity
+        self.x_location = x_location
+        self.y_velocity = y_velocity
+        self.y_location = y_location
+    def get_ffriction(self, gravity, friction_co):
+        friction_force = self.mass*gravity*friction_co
+        return friction_force
+    def get_acceleration(self,net_force):
+        acceleration = net_force/self.mass
+        return acceleration
+    
+
+class particle(entity):
     def __init__(self, x_location,y_location,x_velocity,y_velocity,mass,radius,color):
         self.x_location = x_location
         self.y_location = y_location
@@ -38,14 +56,20 @@ class particle:
 
         self.x_velocity = x_velocity
         self.y_velocity = y_velocity
-    def update(self,height, width, gravity):
+    def get_bounds(self):
+        lowest_point = self.y_location + self.radius
+        x_right = self.x_location + self.radius
+        x_left = self.x_location - self.radius
+        return lowest_point,x_right,x_left
+
+    def update(self,height, width, gravity,bounce_coefficient,friction_coefficient):
         if self.y_location + self.radius < height:
             self.y_velocity += gravity
         self.y_location += self.y_velocity
         if self.y_location + self.radius >= height:
             self.y_location = height -self.radius
             self.y_velocity = (-self.y_velocity)
-            self.y_velocity = kb*self.y_velocity
+            self.y_velocity = bounce_coefficient*self.y_velocity
             if (abs(self.y_velocity) <= (gravity+0.2)) and (self.y_location + self.radius == height):
                 self.y_velocity = 0
                 gravity = 0
@@ -54,13 +78,17 @@ class particle:
         if (self.x_location +self.radius >= width):
             self.x_location = width - self.radius
             self.x_velocity = (-self.x_velocity)
-            self.x_velocity = kb*self.x_velocity
-            if (abs(self.x_velocity) <= (0.37)) and ((self.x_location + self.radius == width) or self.x_location - self.radius == 0):
-                self.x_location = 0
+            self.x_velocity = bounce_coefficient*self.x_velocity
+            if (abs(self.x_velocity) <= (0.37)) and ((self.x_location + self.radius == width) or (self.x_location - self.radius == 0)):
+                self.x_velocity = 0
+        if not(self.x_location+self.radius>= width) or not(self.x_location - self.radius <= 0):
+            friction_force = entity.get_ffriction(self.mass,gravity,friction_coefficient)
+            acceleration = entity.get_acceleration(particle,friction_force)
+
         if (self.x_location - self.radius <= 0):
             self.x_location = self.radius
             self.x_velocity = (-self.x_velocity)
-            self.x_velocity = kb*self.x_velocity
+            self.x_velocity = bounce_coefficient*self.x_velocity
             if (abs(self.x_velocity) <= (0.37)) and ((self.x_location + self.radius == width) or self.x_location - self.radius == 0):
                 self.x_velocity = 0
         
@@ -84,7 +112,7 @@ while running:
 
     # player_rect.x = player_location[0]
     # player_rect.y = player_location[1]
-    par1.update(heightt,wid,g)
+    par1.update(heightt,wid,g,kb,mu)
     par1.draw(screen)
 
     # *********************************************FIRST VERSION********************************************************
