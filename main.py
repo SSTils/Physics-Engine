@@ -1,55 +1,47 @@
 import pygame
-
+import math
 pygame.init()
 
 clock = pygame.time.Clock()
 
 screen = pygame.display.set_mode((1800, 880))
-window_size = (1800,880)
 
 pygame.display.set_caption("Engine Version 1")
 
-# circleee = pygame.image.load(r'C:\Users\MSI\Downloads\circleee.png')
-
-moving_right = False
-moving_left = False
-
-# player_location = [50,50]
-player_y_momentum = 0
-
-# player_rect = pygame.Rect(player_location[0],player_location[1],circleee.get_width(),circleee.get_height())
-# test_rect = pygame.Rect(100,100,100,50)
 circle_location = pygame.math.Vector2(900.0,440.0)
-circle_xlocation = circle_location[0]
-circle_ylocation = circle_location[1]
+circle_xlocation = circle_location.x
+circle_ylocation = circle_location.y
 circle_y_velocity = 0
-circle_x_velocity = 10
+circle_x_velocity = 12
 circle_radius = 70.0
-gravity = g = 0.17
+gravity = g = 0.2
 heightt = screen.get_height()
 bouncing_coefficent = kb = 0.7
 wid = screen.get_width()
 friction_coefficient_ = mu = 0.2
-
-
+mouse_ = pygame.math.Vector2(pygame.mouse.get_pos())
+dt = 1/ 60.0
+accumulator = 0.0
 class entity:
-    def __init__(self,mass,x_velocity,y_velocity,x_location,y_location):
+    def __init__(self,mass,x_velocity,y_velocity,x_location,y_location,mouse_location):
         self.mass = mass
         self.location = pygame.math.Vector2(x_location,y_location)
         self.velocity = pygame.math.Vector2(x_velocity,y_velocity)
+        self.mouse_loc = mouse_location
+        self.is_being_dragged = False
     def get_ffriction(self, gravity, friction_co):
         friction_force = self.mass*gravity*friction_co
         return friction_force
     def get_acceleration(self,net_force):
         acceleration = net_force/self.mass
         return acceleration
-    
 
 class particle(entity):
     def __init__(self, x_location,y_location,x_velocity,y_velocity,mass,radius,color):
         super().__init__(mass,x_velocity,y_velocity,x_location,y_location)
         self.radius = radius
         self.color = color
+
     def get_bounds(self):
         lowest_point = self.location.y + self.radius
         x_right = self.location.x + self.radius
@@ -57,6 +49,7 @@ class particle(entity):
         return lowest_point,x_right,x_left
 
     def update(self,height, width, gravity,bounce_coefficient,friction_coefficient):
+
         if self.location.y + self.radius < height:
             self.velocity.y += gravity
         self.location.y += self.velocity.y
@@ -91,6 +84,11 @@ class particle(entity):
             self.velocity.x = bounce_coefficient*self.velocity.x
             if (abs(self.velocity.x) <= (0.37)) and ((self.location.x + self.radius == width) or self.location.x - self.radius == 0):
                 self.velocity.x = 0
+    def click_or_not(self):
+        if math.sqrt(((mouse_.y - self.location.y)**2) + ((mouse_.x - self.location.x)**2)) <= self.radius:
+            click = True
+        return click
+
         
 
     def draw(self, surface ):
@@ -99,24 +97,18 @@ par1 = particle(circle_xlocation, circle_ylocation,circle_x_velocity,circle_y_ve
 
 running = True
 while running:
-    # if player_location[1] > window_size[1]-circleee.get_height():
-    #     player_y_momentum = -player_y_momentum
-    # else:
-    #     player_y_momentum += 0.2
-    # player_location[1] += player_y_momentum
-    screen.fill((23, 35, 61))
-    # if moving_right:
-    #     player_location[0]+=4
-    # if moving_left:
-    #     player_location[0]-=4
+    frame_time = clock.tick()/1000.0
+    accumulator += frame_time
 
-    # player_rect.x = player_location[0]
-    # player_rect.y = player_location[1]
-    par1.update(heightt,wid,g,kb,mu)
+    while accumulator >= dt:
+        par1.update(heightt, wid, g, kb, mu)
+        accumulator -= dt
+
+
+    screen.fill((23, 35, 61))
     par1.draw(screen)
 
     # *********************************************FIRST VERSION********************************************************
-
     # point_circle = pygame.draw.circle(screen,(75, 145, 145),(circle_xlocation,circle_ylocation),circle_radius)
     # if circle_ylocation + circle_radius < screen.get_height():
     #     circle_y_velocity += g
@@ -126,28 +118,14 @@ while running:
     #     circle_ylocation += circle_y_velocity
     # if circle_y_velocity < 0:
     #     circle_ylocation += circle_y_velocity
-
-    # *********************************************FIRST VERSION********************************************************
-
-    # if player_rect.colliderect(test_rect):
-    #     pygame.draw.rect(screen,(255,0,0),test_rect)
-    # else:
-    #     pygame.draw.rect(screen,(0,0,0),test_rect)
-    # screen.blit(circleee,player_location)     
+    # *********************************************FIRST VERSION********************************************************  
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        # if event.type == pygame.KEYDOWN:
-        #     if event.key == pygame.K_RIGHT:
-        #         moving_right = True
-        #     if event.key == pygame.K_LEFT:
-        #         moving_left = True
-        # if event.type == pygame.KEYUP:
-        #     if event.key == pygame.K_RIGHT:
-        #         moving_right = False
-        #     if event.key == pygame.K_LEFT:
-        #         moving_left = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                par1.click_or_not() 
     pygame.display.flip()
-    clock.tick(60)
 
 pygame.quit()
