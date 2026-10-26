@@ -19,15 +19,13 @@ heightt = screen.get_height()
 bouncing_coefficent = kb = 0.7
 wid = screen.get_width()
 friction_coefficient_ = mu = 0.2
-mouse_ = pygame.math.Vector2(pygame.mouse.get_pos())
 dt = 1/ 60.0
 accumulator = 0.0
 class entity:
-    def __init__(self,mass,x_velocity,y_velocity,x_location,y_location,mouse_location):
+    def __init__(self,mass,x_velocity,y_velocity,x_location,y_location):
         self.mass = mass
         self.location = pygame.math.Vector2(x_location,y_location)
         self.velocity = pygame.math.Vector2(x_velocity,y_velocity)
-        self.mouse_loc = mouse_location
         self.is_being_dragged = False
     def get_ffriction(self, gravity, friction_co):
         friction_force = self.mass*gravity*friction_co
@@ -84,14 +82,10 @@ class particle(entity):
             self.velocity.x = bounce_coefficient*self.velocity.x
             if (abs(self.velocity.x) <= (0.37)) and ((self.location.x + self.radius == width) or self.location.x - self.radius == 0):
                 self.velocity.x = 0
-    def click_or_not(self):
-        if math.sqrt(((mouse_.y - self.location.y)**2) + ((mouse_.x - self.location.x)**2)) <= self.radius:
-            click = True
-        return click
 
         
 
-    def draw(self, surface ):
+    def draw(self, surface):
         pygame.draw.circle(surface, self.color, (int(self.location.x),int(self.location.y)), float(self.radius))
 par1 = particle(circle_xlocation, circle_ylocation,circle_x_velocity,circle_y_velocity, 10, circle_radius,(75, 145, 145))
 
@@ -123,9 +117,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                par1.click_or_not() 
     pygame.display.flip()
 
 pygame.quit()
