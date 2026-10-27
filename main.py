@@ -138,6 +138,7 @@ while running:
                 par1.is_being_dragged = True # IMPORTANT ************************************************************
         if event.type == pygame.MOUSEBUTTONUP: # IMPORTANT ************************************************************
             par1.is_being_dragged = False # IMPORTANT ************************************************************
+            par1.velocity = (pygame.math.Vector2(pygame.mouse.get_pos()) - par1.previous_mouse)
 
     pygame.display.flip()
 
