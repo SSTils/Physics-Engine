@@ -50,9 +50,10 @@ class particle(entity):
     # IMPORTANT ************************************************************
     def get_bounds(self):
         lowest_point = self.location.y + self.radius
-        x_right = self.location.x + self.radius
-        x_left = self.location.x - self.radius
-        return lowest_point,x_right,x_left
+        highest_point = self.location.y - self.radius
+        x_right = self.location.x - self.radius
+        x_left = self.location.x + self.radius
+        return lowest_point,highest_point,x_right,x_left
 
     def update(self,height, width, gravity,bounce_coefficient,friction_coefficient,current_mouse): # IMPORTANT ************************************************************
         if self.is_being_dragged: # IMPORTANT ************************************************************
@@ -79,7 +80,7 @@ class particle(entity):
                 self.velocity.x = bounce_coefficient*self.velocity.x
                 if (abs(self.velocity.x) <= (0.37)) and ((self.location.x + self.radius == width) or (self.location.x - self.radius == 0)):
                     self.velocity.x = 0
-            if not(self.location.x+self.radius>= width) or not(self.location.x - self.radius <= 0):
+            if (not(self.location.x+self.radius> width) or not(self.location.x - self.radius < 0)) and (self.location.y + self.radius == height):
                 friction_force = self.get_ffriction(gravity,friction_coefficient)
                 acceleration = self.get_acceleration(friction_force)
                 if self.velocity.x>0 and self.location.y + self.radius >= height:
@@ -134,11 +135,14 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             par1.previous_mouse = pygame.math.Vector2(pygame.mouse.get_pos()) # VERY IMPORTANT ************************************************************
-            if event.button == 1 and par1.in_or_not(pygame.math.Vector2(pygame.mouse.get_pos())) : # IMPORTANT ************************************************************
-                par1.is_being_dragged = True # IMPORTANT ************************************************************
-        if event.type == pygame.MOUSEBUTTONUP: # IMPORTANT ************************************************************
-            par1.is_being_dragged = False # IMPORTANT ************************************************************
-            par1.velocity = (pygame.math.Vector2(pygame.mouse.get_pos()) - par1.previous_mouse)
+            if event.button == 1 and par1.in_or_not(pygame.math.Vector2(pygame.mouse.get_pos())): # IMPORTANT ************************************************************
+                a = par1.in_or_not(pygame.math.Vector2(pygame.mouse.get_pos()))
+                if a:
+                    par1.is_being_dragged = True # IMPORTANT ************************************************************
+        if event.type == pygame.MOUSEBUTTONUP : # IMPORTANT ************************************************************
+            if event.button == 1 and par1.is_being_dragged:
+                par1.is_being_dragged = False # IMPORTANT ************************************************************
+                par1.velocity = (pygame.math.Vector2(pygame.mouse.get_pos()) - par1.previous_mouse)
 
     pygame.display.flip()
 
