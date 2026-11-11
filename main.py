@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Umutcan Berke Koç. All Rights Reserved.
 import pygame
 import math
 pygame.init()
